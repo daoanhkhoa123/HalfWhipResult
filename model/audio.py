@@ -110,7 +110,7 @@ def mel_filters(device, n_mels:int) -> torch.Tensor:
     """
     assert n_mels in {80, 128},  f"Unsupported n_mels: {n_mels}"
 
-    filter_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "mel_filters.npz")
+    filter_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "assets", "mel_filters.npz")
     with np.load(filter_path, allow_pickle=False) as f:
         return torch.from_numpy(f[f"mel_{n_mels}"]).to(device)
 
@@ -163,3 +163,8 @@ def log_mel_spectrogram(
     # same as log_spec = torch.clamp(log_spec, min= log_spec.max()-8.0); untested
     log_spec = (log_spec+4.0)/4.0
     return log_spec
+
+
+if __name__ == "__main__":
+    filter_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "assets", "mel_filters.npz")
+    print(filter_path)
