@@ -10,16 +10,16 @@ import torch
 from torch.nn import functional as fn
 
 # hard-coded audio hyperparameters
-SAMPLE_RATE = 16000
+SAMPLE_RATE = 1600
 N_FFT= 400
 HOP_LENTGH = 160
 CHUNK_LENGTH =30
 N_SAMPLES = CHUNK_LENGTH * SAMPLE_RATE # 48000 samples
 N_FRAMES = exact_div(SAMPLE_RATE, HOP_LENTGH) # 3000 frames
 
-N_SAAMPLES_PER_TOKEN = HOP_LENTGH  * 2
+N_SAMPLES_PER_TOKEN = HOP_LENTGH  * 2
 FRAMES_PER_SECOND = exact_div(SAMPLE_RATE, HOP_LENTGH)
-TOKENS_PER_SECOND = exact_div(SAMPLE_RATE, N_SAAMPLES_PER_TOKEN)
+TOKENS_PER_SECOND = exact_div(SAMPLE_RATE, N_SAMPLES_PER_TOKEN)
 
 def load_audio(file:str, sr:int = SAMPLE_RATE):
     """
@@ -64,7 +64,7 @@ def load_audio(file:str, sr:int = SAMPLE_RATE):
     except CalledProcessError as e:
         raise RuntimeError(f"Failed to load audio: {e.stderr.decode()}") from e
     
-    # -1 1 normalization
+    # -1 1 normalizationhh
     return np.frombuffer(out, np.int16).flatten().astype(np.float32) / 32768.0
 
 
