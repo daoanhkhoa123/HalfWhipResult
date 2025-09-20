@@ -151,8 +151,12 @@ class AudioEncoder(nn.Module):
         input = input.permute(0, 2, 1)
 
         if self.use_positionencoding:
-            assert input.shape[1:] == self.positional_embedding.shape, "incorrect audio shape"
-            input = input+ self.positional_embedding
+            assert input.shape[1:] == self.positional_embedding.shape, (
+            f"Incorrect audio shape for positional embedding!\n"
+            f"Expected sequence shape (seq_len, hidden_dim): {self.positional_embedding.shape}\n"
+            f"Actual input shape after convs: {input.shape[1:]}\n"
+            )
+            input = input + self.positional_embedding
         
         input = self.blocks(input)
         input = self.ln_post(input)

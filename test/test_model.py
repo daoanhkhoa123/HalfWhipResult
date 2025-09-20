@@ -51,6 +51,8 @@ def setup():
     return dims
 
 if __name__ == "__main__":
+    # python test_models.py --n_mels 80 --n_audio_ctx 200 --n_audio_state 128 --n_audio_head 8
+
     dims = setup()
     print(dims)
 
