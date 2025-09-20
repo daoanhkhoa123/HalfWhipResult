@@ -129,7 +129,8 @@ class AudioEncoder(nn.Module):
                                nn.GELU())
         self.use_positionencoding = use_positionencoding
         if use_positionencoding:
-            self.register_buffer("positional_embedding", sinusoids(n_ctx, n_state))
+            # why divided by 2? go ask yourself zuckberg
+            self.register_buffer("positional_embedding", sinusoids(n_ctx//2, n_state))
 
         # self.blocks:Iterable[ResidualAttentionBlock] = nn.ModuleList(
         #     [ResidualAttentionBlock(n_state, n_head) for _ in range(n_layer)]
