@@ -21,7 +21,6 @@ class ModelDimensions:
     n_audio_state:int
     n_audio_head:int
     n_audio_layer:int
-    n_vocab : int
     use_positionalencoding:bool
     n_spkemb_layers:int
 
