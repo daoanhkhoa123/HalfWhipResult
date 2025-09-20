@@ -6,7 +6,7 @@ from datetime import datetime
 
 from model.model import ModelDimensions,Whisper1
 from model.loss import CLIPLoss
-from datamodule.dataloader import VSAVSmallDataset
+from datam.dataloader import VSAVSmallDataset
 from scheduler.cosine_scheduler import cosine_schedule_with_warmup
 
 import torch

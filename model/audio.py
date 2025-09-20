@@ -68,12 +68,23 @@ def load_audio(file:str, sr:int = SAMPLE_RATE):
     return np.frombuffer(out, np.int16).flatten().astype(np.float32) / 32768.0
 
 
+def pad_or_trim_tensor(tensor:torch.Tensor, length: int = N_SAMPLES, *, axis:int=-1) -> torch.Tensor:
+    if tensor.shape[axis] > length:
+        tensor=tensor.index_select(dim=axis, index=torch.arange(length, device=tensor.device))
+
+    if tensor.shape[axis] < length:
+        pad_widths = [(0,0)] * tensor.ndim
+        pad_widths[axis] = (0, length- tensor.shape[axis])
+        tensor = fn.pad(tensor, [pad for sizes in pad_widths[::-1] for pad in sizes])
+    
+    return tensor
+
 def pad_or_trim(array, length:int=N_SAMPLES, *, axis:int=-1):
     # i cant do Union tensor and ndarray because of statc error checking 
     """
     Pad or trim the audio array to N_SAMPLES, as expected by the encoder.
     """
-
+    raise NotImplementedError("Check pad_or_trim_tensor instead")
     if torch.is_tensor(array):
         if array.shape[axis] > length:
             array=array.index_select(dim=axis, index=torch.arange(length, device=array.device))
@@ -91,8 +102,6 @@ def pad_or_trim(array, length:int=N_SAMPLES, *, axis:int=-1):
             pad_widths = [(0,0)] * array.ndim
             pad_widths[axis] = (0, length-array.shape[axis])
             array = np.pad(array, pad_widths)
-
-
     return array
         
 

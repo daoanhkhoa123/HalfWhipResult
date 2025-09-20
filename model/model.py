@@ -81,7 +81,7 @@ class MultiHeadAttention(nn.Module):
             # qk is n_batch, n_head, seq_len, seq_len
             qk=(q*scale) @ (k*scale).transpose(-1,-2)
             if mask is not None:
-                qk += mask[:n_ctx, :n_ctx]
+                qk = qk + mask[:n_ctx, :n_ctx]
             qk = qk.float()
 
             w = fn.softmax(qk, dim=-1, dtype=q.dtype)
@@ -109,12 +109,12 @@ class ResidualAttentionBlock(nn.Module):
 
     def forward(self, input:Tensor, xa:Optional[Tensor] = None,
                 mask:Optional[Tensor] = None, kv_cache:Optional[dict] = None):
-        input += self.attn(self.attn_ln(input), mask=mask, kv_cache=kv_cache)[0]
+        input = input+ self.attn(self.attn_ln(input), mask=mask, kv_cache=kv_cache)[0]
         
         if self.cross_attn is not None and self.cross_attn_ln is not None:
-            input += self.cross_attn(self.cross_attn_ln(input), xa, kv_cache=kv_cache)[0]
+            input = input+ self.cross_attn(self.cross_attn_ln(input), xa, kv_cache=kv_cache)[0]
 
-        input+=self.mlp(self.mlp_ln(input))
+        input = input + self.mlp(self.mlp_ln(input))
         return input
         
 class AudioEncoder(nn.Module):
@@ -153,7 +153,7 @@ class AudioEncoder(nn.Module):
 
         if self.use_positionencoding:
             assert input.shape[1:] == self.positional_embedding.shape, "incorrect audio shape"
-            input += self.positional_embedding
+            input = input+ self.positional_embedding
         
         input = self.blocks(input)
         input = self.ln_post(input)
@@ -195,6 +195,7 @@ class Whisper1(nn.Module):
 
         self.speaker_embedding = SpeakerEmbedding(self.dims.n_audio_state, self.dims.n_audio_head, self.dims.n_spkemb_layers)
         self.spoofing_classifier = SpoofingClassifier(self.dims.n_audio_state)
+        self.logit_scale = nn.Parameter(torch.ones([]) *  np.log(1/0.07))
 
     def embed_audio(self, mel:Tensor):
         return self.encoder(mel)
@@ -203,8 +204,8 @@ class Whisper1(nn.Module):
         features = self.encoder(mel)
         
         spk_emb = self.speaker_embedding(features)
-        spoofing = self.spoofing_classifier(features)
-        return spk_emb, spoofing
+        spoofing_logits = self.spoofing_classifier(features)
+        return spk_emb, spoofing_logits
 
     @property
     def device(self):
