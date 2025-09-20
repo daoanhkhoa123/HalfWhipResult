@@ -3,11 +3,13 @@ from tqdm import tqdm
 from dataclasses import dataclass, asdict
 import logging
 from datetime import datetime
+import os
 
 from model.model import ModelDimensions,Whisper1
 from model.loss import CLIPLoss
 from datam.dataloader import VSAVSmallDataset
 from scheduler.cosine_scheduler import cosine_schedule_with_warmup
+from datam.litdataloader import VSAVDataModule
 
 import torch
 from torch.optim import AdamW
@@ -31,7 +33,7 @@ class Traintest_config:
         return torch.device(self._device)
 
 def train(model_dimensions:ModelDimensions, config:Traintest_config):
-    train_dataloader = DataLoader(VSAVSmallDataset(config.metadata_path, config.prefix), config.batch_size, True)
+    train_dataloader = DataLoader(VSAVSmallDataset(config.metadata_path, config.prefix), config.batch_size, shuffle=True, collate_fn=VSAVDataModule.collate_fn)
     model = Whisper1(model_dimensions)
     model = model.to(config.device)
     model.train()
@@ -120,6 +122,7 @@ def get_config(parser:argparse.ArgumentParser):
 def setup_logger():
     current_time = datetime.now().strftime("%Y%m%d-%H%M%S")
     filename =f"traintorch_testsmall_{current_time}.txt"
+    filename = os.path.join("logs", filename)
 
     logging.basicConfig(filename=filename,
                         filemode="w", level=logging.INFO,
