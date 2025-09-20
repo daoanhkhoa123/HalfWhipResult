@@ -32,6 +32,17 @@ def sinusoids(length, chanels, maxa_timescale=10000):
     scaled_time = torch.arange(length)[:, np.newaxis] * inv_timescales[np.newaxis, :]
     return torch.cat([torch.sin(scaled_time), torch.cos(scaled_time)], dim=1)
 
+class MaximumPooling(nn.Module):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def forward(self, input:Tensor)  -> Tensor:
+        """input is tensor of b_size, seq_len, h_dim
+        each feature in h_dim is the max along the sequences
+        output would be b_size, h_dim
+        """
+        return torch.amax(input, dim=1)
+
 class MultiHeadAttention(nn.Module):
     use_sdpa = True
 
@@ -176,7 +187,8 @@ class SpeakerEmbedding(nn.Module):
 class SpoofingClassifier(nn.Module):
     def __init__(self, n_state) -> None:
         super().__init__()
-        self.blocks = nn.Sequential(nn.Linear(n_state, n_state//2),
+        self.blocks = nn.Sequential(MaximumPooling(),
+                                    nn.Linear(n_state, n_state//2),
                                     nn.GELU(),
                                     nn.Linear(n_state//2, n_state//4),
                                     nn.GELU(),
