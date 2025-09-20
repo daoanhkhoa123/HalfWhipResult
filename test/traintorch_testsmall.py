@@ -1,10 +1,12 @@
 import argparse
 from tqdm import tqdm
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
+import logging
+from datetime import datetime
 
 from model.model import ModelDimensions,Whisper1
 from model.loss import CLIPLoss
-from train.dataloader import VSAVSmallDataset
+from datamodule.dataloader import VSAVSmallDataset
 from scheduler.cosine_scheduler import cosine_schedule_with_warmup
 
 import torch
@@ -115,8 +117,31 @@ def get_config(parser:argparse.ArgumentParser):
 
     return model_cfg, train_cfg
 
+def setup_logger():
+    current_time = datetime.now().strftime("%Y%m%d-%H%M%S")
+    filename =f"traintorch_testsmall_{current_time}.txt"
+
+    logging.basicConfig(filename=filename,
+                        filemode="w", level=logging.INFO,
+                        format="%(asctime)s - %(levelname)s - %(message)s")
+    logging.info("Logger Initialized")
+    return filename
+
+def log_configs(model_cfg, train_cfg):
+    logging.info("===== Training Configuration =====")
+    for k, v in asdict(train_cfg).items():
+        logging.info(f"{k}: {v}")
+
+    logging.info("===== Model Dimensions =====")
+    for k, v in asdict(model_cfg).items():
+        logging.info(f"{k}: {v}")
 
 if __name__ == "__main__":
     parser = setup()
     model_cfg, train_cfg = get_config(parser)
+
+    log_file = setup_logger()
+    log_configs(model_cfg, train_cfg)
+    logging.info(f"Logging to {log_file}")
+
     train(model_cfg, train_cfg)
