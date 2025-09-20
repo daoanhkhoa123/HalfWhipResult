@@ -47,12 +47,14 @@ def train(model_dimensions:ModelDimensions, config:Traintest_config):
     model.zero_grad()
     for epoch in range(int(config.epochs)):
         step = None
-        loss= torch.zeros()
+        loss= torch.zeros([])
         for step, batch in tqdm(enumerate(train_dataloader), desc=f"Step {step}, Current Loss: {loss.item()}"):
+            model.zero_grad()
             audio, speaker, att_type = batch
             audio = audio.to(config.device)
             speaker = speaker.to(config.device)
             att_type = att_type.to(config.device)
+
             speaker_embedding, spoofing_logits = model(audio)
 
             speaker_loss = CLIPLoss(model, speaker_embedding)
@@ -63,7 +65,6 @@ def train(model_dimensions:ModelDimensions, config:Traintest_config):
             optimizer.step()
             if scheduler is not None:
                 scheduler.step()
-            model.zero_grad()
 
 
 def setup():
@@ -86,7 +87,6 @@ def setup():
     parser.add_argument("--n_audio_state", type=int, default=512)
     parser.add_argument("--n_audio_head", type=int, default=8)
     parser.add_argument("--n_audio_layer", type=int, default=12)
-    parser.add_argument("--n_vocab", type=int, default=10000)
     parser.add_argument("--use_positionalencoding", action="store_true")
     parser.add_argument("--n_spkemb_layers", type=int, default=3)
 
@@ -102,7 +102,6 @@ def get_config(parser:argparse.ArgumentParser):
         n_audio_state=args.n_audio_state,
         n_audio_head=args.n_audio_head,
         n_audio_layer=args.n_audio_layer,
-        n_vocab=args.n_vocab,
         use_positionalencoding=args.use_positionalencoding,
         n_spkemb_layers=args.n_spkemb_layers,
     )
