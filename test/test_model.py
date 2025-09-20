@@ -4,7 +4,7 @@ import torch
 from torch import nn
 from typing import Iterable
 
-
+from model.audio import N_SAMPLES
 from model.model import Whisper1, SpeakerEmbedding, SpoofingClassifier, MultiHeadAttention, ModelDimensions
 
 
@@ -40,7 +40,7 @@ def setup():
 
     dims = ModelDimensions(
         n_mels=args.n_mels,
-        n_audio_ctx=args.n_audio_ctx,
+        n_audio_ctx=N_SAMPLES,
         n_audio_state=args.n_audio_state,
         n_audio_head=args.n_audio_head,
         n_audio_layer=args.n_audio_layer,
