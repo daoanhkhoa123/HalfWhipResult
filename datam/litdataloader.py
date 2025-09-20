@@ -3,7 +3,7 @@ import os
 import torch
 from torch.utils.data import DataLoader
 from .dataloader import VSAVSmallDataset
-from ..model.audio import pad_or_trim_tensor
+from model.audio import pad_or_trim_tensor
 
 class VSAVDataModule(lit.LightningDataModule):
     def __init__(self, metadata_path: str, prefix: str = "", batch_size=64,**dataloader_kwargs) -> None:
