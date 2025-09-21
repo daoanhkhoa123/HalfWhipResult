@@ -60,7 +60,7 @@ def train(model_dimensions:ModelDimensions, config:Traintest_config):
     step = 0
     loss= torch.zeros([])
     for epoch in range(int(config.epochs)):
-        for step, batch in tqdm(enumerate(train_dataloader), desc=f"Step {step}, Current Loss: {loss.item()}"):
+        for step, batch in tqdm(enumerate(train_dataloader), desc=f"Epoch {epoch} Step {step}, Current Loss: {loss.item()}"):
             model.zero_grad()
             audio, speaker, att_type = batch
             audio = audio.to(config.device)
