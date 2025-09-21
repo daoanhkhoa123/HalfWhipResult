@@ -1,0 +1,58 @@
+2025-09-21 08:15:22,240 - INFO - Logger Initialized
+2025-09-21 08:15:22,240 - INFO - ===== Training Configuration =====
+2025-09-21 08:15:22,240 - INFO - metadata_path: /content/metadatas/metadata_small_train.csv
+2025-09-21 08:15:22,240 - INFO - prefix: /content/vsasv_reorganized/content/vsasv_reorganized
+2025-09-21 08:15:22,240 - INFO - batch_size: 128
+2025-09-21 08:15:22,240 - INFO - epochs: 64
+2025-09-21 08:15:22,240 - INFO - n_gpu: 1
+2025-09-21 08:15:22,241 - INFO - _device: cuda
+2025-09-21 08:15:22,241 - INFO - lr: 0.001
+2025-09-21 08:15:22,241 - INFO - eps: 1e-08
+2025-09-21 08:15:22,241 - INFO - weight_decay: 0.01
+2025-09-21 08:15:22,241 - INFO - ===== Model Dimensions =====
+2025-09-21 08:15:22,241 - INFO - n_mels: 80
+2025-09-21 08:15:22,241 - INFO - n_audio_ctx: 1024
+2025-09-21 08:15:22,241 - INFO - n_audio_state: 128
+2025-09-21 08:15:22,241 - INFO - n_audio_head: 8
+2025-09-21 08:15:22,241 - INFO - n_audio_layer: 8
+2025-09-21 08:15:22,241 - INFO - use_positionalencoding: False
+2025-09-21 08:15:22,241 - INFO - n_spkemb_layers: 3
+2025-09-21 08:15:22,241 - INFO - Logging to logs/traintorch_testsmall_20250921-081522.txt
+2025-09-21 08:15:42,878 - INFO - Epoch 0, Step 0, SpeakerLoss 3.6363 , SpoofLoss 0.7812 , Loss 2.2087
+2025-09-21 08:16:03,121 - INFO - Epoch 1, Step 0, SpeakerLoss 3.6364 , SpoofLoss 0.7811 , Loss 2.2087
+2025-09-21 08:16:23,431 - INFO - Epoch 2, Step 0, SpeakerLoss 3.6362 , SpoofLoss 0.7413 , Loss 2.1888
+2025-09-21 08:16:43,186 - INFO - Epoch 3, Step 0, SpeakerLoss 3.6363 , SpoofLoss 0.6961 , Loss 2.1662
+2025-09-21 08:17:03,223 - INFO - Epoch 4, Step 0, SpeakerLoss 3.6358 , SpoofLoss 0.6747 , Loss 2.1553
+2025-09-21 08:17:22,767 - INFO - Epoch 5, Step 0, SpeakerLoss 3.6342 , SpoofLoss 0.6508 , Loss 2.1425
+2025-09-21 08:17:42,771 - INFO - Epoch 6, Step 0, SpeakerLoss 3.6330 , SpoofLoss 0.6286 , Loss 2.1308
+2025-09-21 08:18:02,174 - INFO - Epoch 7, Step 0, SpeakerLoss 3.6003 , SpoofLoss 0.6252 , Loss 2.1128
+2025-09-21 08:18:22,289 - INFO - Epoch 8, Step 0, SpeakerLoss 3.3374 , SpoofLoss 0.5841 , Loss 1.9608
+2025-09-21 08:18:41,697 - INFO - Epoch 9, Step 0, SpeakerLoss 3.6301 , SpoofLoss 0.6480 , Loss 2.1390
+2025-09-21 08:19:01,709 - INFO - Epoch 10, Step 0, SpeakerLoss 3.6341 , SpoofLoss 0.6649 , Loss 2.1495
+2025-09-21 08:19:21,169 - INFO - Epoch 11, Step 0, SpeakerLoss 3.6321 , SpoofLoss 0.6437 , Loss 2.1379
+2025-09-21 08:19:41,199 - INFO - Epoch 12, Step 0, SpeakerLoss 3.6319 , SpoofLoss 0.6149 , Loss 2.1234
+2025-09-21 08:20:00,379 - INFO - Epoch 13, Step 0, SpeakerLoss 3.6310 , SpoofLoss 0.5772 , Loss 2.1041
+2025-09-21 08:20:20,554 - INFO - Epoch 14, Step 0, SpeakerLoss 3.5896 , SpoofLoss 0.5569 , Loss 2.0733
+2025-09-21 08:20:39,673 - INFO - Epoch 15, Step 0, SpeakerLoss 2.6809 , SpoofLoss 0.6344 , Loss 1.6577
+2025-09-21 08:20:59,764 - INFO - Epoch 16, Step 0, SpeakerLoss 2.3680 , SpoofLoss 0.5875 , Loss 1.4778
+2025-09-21 08:21:18,856 - INFO - Epoch 17, Step 0, SpeakerLoss 3.6030 , SpoofLoss 0.4767 , Loss 2.0399
+2025-09-21 08:21:38,937 - INFO - Epoch 18, Step 0, SpeakerLoss 3.6223 , SpoofLoss 0.4840 , Loss 2.0532
+2025-09-21 08:21:57,956 - INFO - Epoch 19, Step 0, SpeakerLoss 3.6312 , SpoofLoss 0.4719 , Loss 2.0515
+2025-09-21 08:22:18,015 - INFO - Epoch 20, Step 0, SpeakerLoss 3.6318 , SpoofLoss 0.4316 , Loss 2.0317
+2025-09-21 08:22:37,119 - INFO - Epoch 21, Step 0, SpeakerLoss 3.6319 , SpoofLoss 0.4503 , Loss 2.0411
+2025-09-21 08:22:57,174 - INFO - Epoch 22, Step 0, SpeakerLoss 3.6274 , SpoofLoss 0.4783 , Loss 2.0528
+2025-09-21 08:23:16,402 - INFO - Epoch 23, Step 0, SpeakerLoss 3.6269 , SpoofLoss 0.5155 , Loss 2.0712
+2025-09-21 08:23:36,429 - INFO - Epoch 24, Step 0, SpeakerLoss 3.6254 , SpoofLoss 0.4772 , Loss 2.0513
+2025-09-21 08:23:55,715 - INFO - Epoch 25, Step 0, SpeakerLoss 3.6162 , SpoofLoss 0.4781 , Loss 2.0471
+2025-09-21 08:24:15,823 - INFO - Epoch 26, Step 0, SpeakerLoss 3.5895 , SpoofLoss 0.3907 , Loss 1.9901
+2025-09-21 08:24:35,062 - INFO - Epoch 27, Step 0, SpeakerLoss 3.5194 , SpoofLoss 0.4330 , Loss 1.9762
+2025-09-21 08:24:55,126 - INFO - Epoch 28, Step 0, SpeakerLoss 3.3335 , SpoofLoss 0.4351 , Loss 1.8843
+2025-09-21 08:25:14,385 - INFO - Epoch 29, Step 0, SpeakerLoss 2.9400 , SpoofLoss 0.4550 , Loss 1.6975
+2025-09-21 08:25:34,394 - INFO - Epoch 30, Step 0, SpeakerLoss 3.6276 , SpoofLoss 0.3368 , Loss 1.9822
+2025-09-21 08:25:53,748 - INFO - Epoch 31, Step 0, SpeakerLoss 3.6371 , SpoofLoss 0.3949 , Loss 2.0160
+2025-09-21 08:26:13,880 - INFO - Epoch 32, Step 0, SpeakerLoss 3.6375 , SpoofLoss 0.4537 , Loss 2.0456
+2025-09-21 08:26:33,008 - INFO - Epoch 33, Step 0, SpeakerLoss 3.6376 , SpoofLoss 0.5112 , Loss 2.0744
+2025-09-21 08:26:53,052 - INFO - Epoch 34, Step 0, SpeakerLoss 3.6376 , SpoofLoss 0.3938 , Loss 2.0157
+2025-09-21 08:27:12,262 - INFO - Epoch 35, Step 0, SpeakerLoss 3.6376 , SpoofLoss 0.4493 , Loss 2.0435
+2025-09-21 08:27:32,397 - INFO - Epoch 36, Step 0, SpeakerLoss 3.6376 , SpoofLoss 0.4473 , Loss 2.0424
+2025-09-21 08:27:51,551 - INFO - Epoch 37, Step 0, SpeakerLoss 3.6376 , SpoofLoss 0.4452 , Loss 2.0414
