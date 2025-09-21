@@ -1,0 +1,6 @@
+this code is so bugged  lmfao
+
+- model.audio has parameters about sampling rate, length padding, nfft, number of mels
+- model has model dimension 
+
+test.traintorch_testsmall has testing confg

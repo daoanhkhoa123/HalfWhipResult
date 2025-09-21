@@ -1,6 +1,7 @@
 import os
 from functools import lru_cache
 from subprocess import CalledProcessError, run
+from dataclasses import dataclass
 from typing import Union, Optional
 
 from .ultils import exact_div
@@ -8,12 +9,12 @@ from .ultils import exact_div
 import numpy as np
 import torch
 from torch.nn import functional as fn
-
+    
 # hard-coded audio hyperparameters
 SAMPLE_RATE = 1600
 N_FFT= 400
 HOP_LENTGH = 160
-CHUNK_LENGTH =30
+CHUNK_LENGTH = 4
 N_SAMPLES = CHUNK_LENGTH * SAMPLE_RATE # 48000 samples
 N_FRAMES = exact_div(SAMPLE_RATE, HOP_LENTGH) # 3000 frames
 
