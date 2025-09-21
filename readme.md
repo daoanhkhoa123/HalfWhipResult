@@ -35,3 +35,7 @@ Model details:
   --n_audio_layer 8 \
   --n_spkemb_layers 3
 ```
+
+What's next?
+- Embedding and spoofing should be sperated
+- No idea bruh
