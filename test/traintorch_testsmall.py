@@ -38,6 +38,13 @@ def train(model_dimensions:ModelDimensions, config:Traintest_config):
     model = model.to(config.device)
     model.train()
 
+    total_params = sum(p.numel() for p in model.parameters())
+    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    non_trainable_params = total_params - trainable_params
+    print(f"Trainable parameters: {trainable_params:,}")
+    print(f"Non-trainable parameters: {non_trainable_params:,}")
+
+
     optimizer = AdamW(model.parameters(), lr=config.lr, eps=config.eps, weight_decay=config.weight_decay)
     step_total = len(train_dataloader) * config.epochs
     n_warmup_steps = int(0.2 * step_total)
