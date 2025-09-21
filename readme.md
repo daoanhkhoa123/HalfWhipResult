@@ -6,7 +6,7 @@ Not good, reaally, look at logs/traintorch_testsmall_20250921-081522.txt, or thi
 
 Experiment ran on google collab, T4 Telsa GPU.
 Model details:
-- Input: sample rate is 1600, number of samples for FFT is 400, hop length is 160, fixed 4 seconds audio length,total sample is 1600, 1 second of audio fits 10 frames
+- Input: sample rate is 1600, number of samples for FFT is 400, hop length is 160, fixed 4 seconds audio length, total sample is 1600, 1 second of audio fits 10 frames
 - Stemming: 2 convolution 1D, Gelu activation, no positional encoding
 - AudioEncoder: 8 layers of multi-head attention of 8 heads, hidden dimension is 128, context length is 1024 (i think its wrong)
 - SpeakerEmbedding: 3 layers of MMA, sames as above. Then mean pooling across context dimension (output is 128) (i think its wrong here also, should be pooling first, then MLP)
@@ -38,4 +38,4 @@ Model details:
 
 What's next?
 - Embedding and spoofing should be sperated
-- No idea bruh
+- Fixing audio parameters (sample rates, hop size, fft, audio length, context length for models)
