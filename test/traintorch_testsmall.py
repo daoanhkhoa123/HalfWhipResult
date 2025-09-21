@@ -69,7 +69,7 @@ def train(model_dimensions:ModelDimensions, config:Traintest_config):
 
             speaker_embedding, spoofing_logits = model(audio)
 
-            speaker_loss = speaker_crit(model, speaker_embedding)
+            speaker_loss = speaker_crit(speaker_embedding)
             spoof_loss = spoofing_crit(spoofing_logits, att_type)
             loss = (speaker_loss + spoof_loss) /2
             loss.backward()
