@@ -211,7 +211,6 @@ class Whisper1(nn.Module):
 
         self.speaker_embedding = SpeakerEmbedding(self.dims.n_audio_state, self.dims.n_audio_head, self.dims.n_spkemb_layers)
         self.spoofing_classifier = SpoofingClassifier(self.dims.n_audio_state)
-        self.logit_scale = nn.Parameter(torch.ones([]) *  np.log(1/0.07))
 
     def embed_audio(self, mel:Tensor):
         return self.encoder(mel)

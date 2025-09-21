@@ -6,7 +6,7 @@ from datetime import datetime
 import os
 
 from model.model import ModelDimensions,Whisper1
-from model.loss import CLIPLoss
+from model.loss import CLIPLossCls
 from datam.dataloader import VSAVSmallDataset
 from scheduler.cosine_scheduler import cosine_schedule_with_warmup
 from datam.litdataloader import VSAVDataModule
@@ -43,6 +43,9 @@ def train(model_dimensions:ModelDimensions, config:Traintest_config):
     n_warmup_steps = int(0.2 * step_total)
     scheduler = cosine_schedule_with_warmup(optimizer, num_warmup_steps=n_warmup_steps, num_traning_steps=step_total)
 
+    speaker_crit = CLIPLossCls()
+    spoofing_crit = torch.nn.CrossEntropyLoss()
+
     # skip gradent accumulaton steps, multiple gpu support
     model.zero_grad()
     step = 0
@@ -57,8 +60,8 @@ def train(model_dimensions:ModelDimensions, config:Traintest_config):
 
             speaker_embedding, spoofing_logits = model(audio)
 
-            speaker_loss = CLIPLoss(model, speaker_embedding)
-            spoof_loss = torch.nn.functional.cross_entropy(spoofing_logits, att_type)
+            speaker_loss = speaker_crit(model, speaker_embedding)
+            spoof_loss = spoofing_crit(spoofing_logits, att_type)
             loss = (speaker_loss + spoof_loss) /2
             loss.backward()
 
