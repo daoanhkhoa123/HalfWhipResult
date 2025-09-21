@@ -44,6 +44,8 @@ def train(model_dimensions:ModelDimensions, config:Traintest_config):
     scheduler = cosine_schedule_with_warmup(optimizer, num_warmup_steps=n_warmup_steps, num_traning_steps=step_total)
 
     speaker_crit = CLIPLossCls()
+    speaker_crit.to(config.device)
+    speaker_crit.train()
     spoofing_crit = torch.nn.CrossEntropyLoss()
 
     # skip gradent accumulaton steps, multiple gpu support
@@ -92,7 +94,7 @@ def setup():
     parser.add_argument("--n_audio_ctx", type=int, default=1500)
     parser.add_argument("--n_audio_state", type=int, default=512)
     parser.add_argument("--n_audio_head", type=int, default=8)
-    parser.add_argument("--n_audio_layer", type=int, default=12)
+    parser.add_argument("--n_audio_layer", type=int, default=8)
     parser.add_argument("--use_positionalencoding", action="store_true")
     parser.add_argument("--n_spkemb_layers", type=int, default=3)
 
