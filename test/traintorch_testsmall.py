@@ -66,6 +66,9 @@ def train(model_dimensions:ModelDimensions, config:Traintest_config):
             if scheduler is not None:
                 scheduler.step()
 
+            if step % 2 == 0:
+                logging.info(f"Epoch {epoch}, Step {step}, Loss {loss.item():.4f}")
+
 
 def setup():
     parser = argparse.ArgumentParser(description="My training script")
