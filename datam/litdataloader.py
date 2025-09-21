@@ -44,9 +44,20 @@ class VSAVDataModule(lit.LightningDataModule):
         If you want any behavior changed for audio, change the code inside audio, not here
         """
         audios, speakers, att_types = zip(*batch)
-        audios = [pad_or_trim_tensor(audio) for audio in audios]
-        audios = torch.stack(audios)
+
+        # keep speaker id unique
+        seen_spekers = set()
+        selected_idx = list()
+        for idx, spk in enumerate(speakers):
+            if spk not in seen_spekers:
+                seen_spekers.add(spk)
+                selected_idx.append(idx)
         
+        audios = [pad_or_trim_tensor(audios[i]) for i in selected_idx]
+        speakers = [speakers[i] for i in selected_idx]
+        att_types = [att_types[i] for i in selected_idx]
+        
+        audios = torch.stack(audios)
         speakers= torch.tensor(speakers, dtype=torch.long)
         att_types = torch.tensor(att_types, dtype= torch.long)
         return audios, speakers, att_types

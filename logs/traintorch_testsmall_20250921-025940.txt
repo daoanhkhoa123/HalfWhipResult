@@ -1,0 +1,24 @@
+2025-09-21 02:59:40,310 - INFO - Logger Initialized
+2025-09-21 02:59:40,310 - INFO - ===== Training Configuration =====
+2025-09-21 02:59:40,310 - INFO - metadata_path: /content/metadatas/metadata_small_train.csv
+2025-09-21 02:59:40,310 - INFO - prefix: /content/vsasv_reorganized/content/vsasv_reorganized
+2025-09-21 02:59:40,310 - INFO - batch_size: 64
+2025-09-21 02:59:40,310 - INFO - epochs: 4
+2025-09-21 02:59:40,310 - INFO - n_gpu: 1
+2025-09-21 02:59:40,310 - INFO - _device: cuda
+2025-09-21 02:59:40,310 - INFO - lr: 0.0001
+2025-09-21 02:59:40,310 - INFO - eps: 1e-08
+2025-09-21 02:59:40,310 - INFO - weight_decay: 0.0
+2025-09-21 02:59:40,310 - INFO - ===== Model Dimensions =====
+2025-09-21 02:59:40,311 - INFO - n_mels: 80
+2025-09-21 02:59:40,311 - INFO - n_audio_ctx: 32
+2025-09-21 02:59:40,311 - INFO - n_audio_state: 4
+2025-09-21 02:59:40,311 - INFO - n_audio_head: 2
+2025-09-21 02:59:40,311 - INFO - n_audio_layer: 3
+2025-09-21 02:59:40,311 - INFO - use_positionalencoding: False
+2025-09-21 02:59:40,311 - INFO - n_spkemb_layers: 3
+2025-09-21 02:59:40,311 - INFO - Logging to logs/traintorch_testsmall_20250921-025940.txt
+2025-09-21 03:01:27,434 - INFO - Epoch 0, Step 0, SpeakerLoss 4.1587 , SpoofLoss 0.4432 , Loss 2.3010
+2025-09-21 03:04:04,434 - INFO - Epoch 1, Step 0, SpeakerLoss 4.1584 , SpoofLoss 0.4431 , Loss 2.3008
+2025-09-21 03:06:40,886 - INFO - Epoch 2, Step 0, SpeakerLoss 4.1586 , SpoofLoss 0.4221 , Loss 2.2903
+2025-09-21 03:09:17,323 - INFO - Epoch 3, Step 0, SpeakerLoss 4.1587 , SpoofLoss 0.4425 , Loss 2.3006

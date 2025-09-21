@@ -45,9 +45,9 @@ def train(model_dimensions:ModelDimensions, config:Traintest_config):
 
     # skip gradent accumulaton steps, multiple gpu support
     model.zero_grad()
+    step = 0
+    loss= torch.zeros([])
     for epoch in range(int(config.epochs)):
-        step = None
-        loss= torch.zeros([])
         for step, batch in tqdm(enumerate(train_dataloader), desc=f"Step {step}, Current Loss: {loss.item()}"):
             model.zero_grad()
             audio, speaker, att_type = batch
@@ -67,7 +67,7 @@ def train(model_dimensions:ModelDimensions, config:Traintest_config):
                 scheduler.step()
 
             if step % 2 == 0:
-                logging.info(f"Epoch {epoch}, Step {step}, SpeakerLoss {speaker.item():.4f} , SpoofLoss {spoof_loss.item():.4f} , Loss {loss.item():.4f}")
+                logging.info(f"Epoch {epoch}, Step {step}, SpeakerLoss {speaker_loss.item():.4f} , SpoofLoss {spoof_loss.item():.4f} , Loss {loss.item():.4f}")
 
 
 def setup():
