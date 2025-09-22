@@ -12,11 +12,17 @@ class CLIPLossCls(nn.Module):
         """
         input: Tensor of shape [batch_size, h_dim]
         """    
+        assert input.size(0) % 2 == 0, f"Batch size must be even. Got {input.size(0)}"
+        half = input.size(0) // 2
+        first, second = input[:half], input[half:]
+        first = first / first.norm(dim=-1, keepdim=True)
+        second = second / second.norm(dim=-1, keepdim=True)
 
-        input = input / input.norm(dim=-1, keepdim=True)
-        sim_mat = input @ input.T * self.logit_scale.exp()
-        labels = torch.arange(input.shape[0], device=input.device)
-        return self.cross_entropy(sim_mat,labels)
+        sim_mat = first @ second.T * self.logit_scale.exp()
+        labels = torch.arange(half, device=input.device)
+        first_loss = self.cross_entropy(sim_mat,labels)
+        second_loss = self.cross_entropy(sim_mat.T, labels)
+        return (first_loss + second_loss) / 2
 
 def CLIPLoss(model:nn.Module, input:Tensor) -> Tensor:
     """

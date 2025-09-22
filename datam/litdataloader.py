@@ -1,6 +1,7 @@
 import lightning as lit
 import os
 import torch
+from collections import defaultdict
 from torch.utils.data import DataLoader
 from .dataloader import VSAVSmallDataset
 from model.audio import pad_or_trim_tensor
@@ -38,20 +39,19 @@ class VSAVDataModule(lit.LightningDataModule):
             raise ValueError(f"Unknown stage {stage}")
 
     @staticmethod
-    def collate_fn(batch):
-        """Just the collate function warper for audio.pad_or_trim
+    def collate_fn_clip(batch):
+        """ Just the collate function warper for audio.pad_or_trim
         
         If you want any behavior changed for audio, change the code inside audio, not here
         """
         audios, speakers, att_types = zip(*batch)
 
-        # keep speaker id unique
-        seen_spekers = set()
-        selected_idx = list()
-        for idx, spk in enumerate(speakers):
-            if spk not in seen_spekers:
-                seen_spekers.add(spk)
-                selected_idx.append(idx)
+        samespeaker_pair_idx = defaultdict(list)
+        for sample_idx, speaker in speakers:
+            if len(samespeaker_pair_idx[speakers])< 2:
+                samespeaker_pair_idx[speaker].append(sample_idx)
+        
+        selected_idx = [a[0] for _, a in samespeaker_pair_idx.items() if len(a) > 1 ] + [a[1] for _,a in samespeaker_pair_idx.items() if len(a) > 1]
         
         audios = [pad_or_trim_tensor(audios[i]) for i in selected_idx]
         speakers = [speakers[i] for i in selected_idx]
@@ -63,13 +63,13 @@ class VSAVDataModule(lit.LightningDataModule):
         return audios, speakers, att_types
 
     def train_dataloader(self):
-        return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, collate_fn=self.collate_fn,**self.kwargs)
+        return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, collate_fn=self.collate_fn_clip,**self.kwargs)
 
     def val_dataloader(self):
-        return DataLoader(self.val_dataset, batch_size=self.batch_size, shuffle=False, collate_fn=self.collate_fn, **self.kwargs)
+        return DataLoader(self.val_dataset, batch_size=self.batch_size, shuffle=False, collate_fn=self.collate_fn_clip, **self.kwargs)
 
     def test_dataloader(self):
-        return DataLoader(self.test_dataset, batch_size=self.batch_size, shuffle= False, collate_fn=self.collate_fn, **self.kwargs)
+        return DataLoader(self.test_dataset, batch_size=self.batch_size, shuffle= False, collate_fn=self.collate_fn_clip, **self.kwargs)
 
     def predict_dataloader(self):
-        return DataLoader(self.predict_dataset, batch_size=self.batch_size, shuffle=False, collate_fn=self.collate_fn, **self.kwargs)
+        return DataLoader(self.predict_dataset, batch_size=self.batch_size, shuffle=False, collate_fn=self.collate_fn_clip, **self.kwargs)

@@ -5,7 +5,7 @@ import logging
 from datetime import datetime
 import os
 
-from model.model import ModelDimensions,Whisper1
+from model.model import ModelDimensions, Whisper1
 from model.loss import CLIPLossCls
 from datam.dataloader import VSAVSmallDataset
 from scheduler.cosine_scheduler import cosine_schedule_with_warmup
@@ -21,57 +21,67 @@ class Traintest_config:
     prefix:str
     batch_size:int
     epochs:int
-    # not yet supported multiple gpu
     n_gpu:int
     _device:str
     lr:float
     eps:float
     weight_decay:float
+    save_dir:str = "checkpoints"
+    save_every:int = 1
 
     @property
     def device(self):
         return torch.device(self._device)
 
+def save_checkpoint(epoch, model, optimizer, scheduler, loss, config):
+    os.makedirs(config.save_dir, exist_ok=True)
+    ckpt_path = os.path.join(config.save_dir, f"checkpoint_epoch{epoch}.pt")
+    torch.save({
+        "epoch": epoch,
+        "model_state": model.state_dict(),
+        "optimizer_state": optimizer.state_dict(),
+        "scheduler_state": scheduler.state_dict() if scheduler else None,
+        "loss": loss.item(),
+        "config": asdict(config)
+    }, ckpt_path)
+    logging.info(f"Checkpoint saved: {ckpt_path}")
+
 def train(model_dimensions:ModelDimensions, config:Traintest_config):
-    train_dataloader = DataLoader(VSAVSmallDataset(config.metadata_path, config.prefix), config.batch_size, shuffle=True, collate_fn=VSAVDataModule.collate_fn)
-    model = Whisper1(model_dimensions)
-    model = model.to(config.device)
+    train_dataloader = DataLoader(
+        VSAVSmallDataset(config.metadata_path, config.prefix),
+        config.batch_size, shuffle=True,
+        collate_fn=VSAVDataModule.collate_fn_clip
+    )
+
+    model = Whisper1(model_dimensions).to(config.device)
     model.train()
 
     total_params = sum(p.numel() for p in model.parameters())
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    non_trainable_params = total_params - trainable_params
     print(f"Trainable parameters: {trainable_params:,}")
-    print(f"Non-trainable parameters: {non_trainable_params:,}")
-
+    print(f"Non-trainable parameters: {total_params - trainable_params:,}")
 
     optimizer = AdamW(model.parameters(), lr=config.lr, eps=config.eps, weight_decay=config.weight_decay)
     step_total = len(train_dataloader) * config.epochs
     n_warmup_steps = int(0.2 * step_total)
     scheduler = cosine_schedule_with_warmup(optimizer, num_warmup_steps=n_warmup_steps, num_traning_steps=step_total)
 
-    speaker_crit = CLIPLossCls()
-    speaker_crit.to(config.device)
-    speaker_crit.train()
+    speaker_crit = CLIPLossCls().to(config.device).train()
     spoofing_crit = torch.nn.CrossEntropyLoss()
 
-    # skip gradent accumulaton steps, multiple gpu support
     model.zero_grad()
+    loss = torch.zeros([])
     step = 0
-    loss= torch.zeros([])
     for epoch in range(int(config.epochs)):
         for step, batch in tqdm(enumerate(train_dataloader), desc=f"Epoch {epoch} Step {step}, Current Loss: {loss.item()}"):
             model.zero_grad()
             audio, speaker, att_type = batch
-            audio = audio.to(config.device)
-            speaker = speaker.to(config.device)
-            att_type = att_type.to(config.device)
+            audio, speaker, att_type = audio.to(config.device), speaker.to(config.device), att_type.to(config.device)
 
             speaker_embedding, spoofing_logits = model(audio)
-
             speaker_loss = speaker_crit(speaker_embedding)
             spoof_loss = spoofing_crit(spoofing_logits, att_type)
-            loss = (speaker_loss + spoof_loss) /2
+            loss = (speaker_loss + spoof_loss) / 2
             loss.backward()
 
             optimizer.step()
@@ -79,13 +89,13 @@ def train(model_dimensions:ModelDimensions, config:Traintest_config):
                 scheduler.step()
 
             if step % 2 == 0:
-                logging.info(f"Epoch {epoch}, Step {step}, SpeakerLoss {speaker_loss.item():.4f} , SpoofLoss {spoof_loss.item():.4f} , Loss {loss.item():.4f}")
+                logging.info(f"Epoch {epoch}, Step {step}, SpeakerLoss {speaker_loss.item():.4f}, SpoofLoss {spoof_loss.item():.4f}, Loss {loss.item():.4f}")
 
+        if (epoch + 1) % config.save_every == 0:
+            save_checkpoint(epoch + 1, model, optimizer, scheduler, loss, config)
 
 def setup():
     parser = argparse.ArgumentParser(description="My training script")
-
-    # ---- Training config ----
     parser.add_argument("--metadata_path", type=str, required=True)
     parser.add_argument("--prefix", type=str, default="")
     parser.add_argument("--batch_size", type=int, default=64)
@@ -95,8 +105,9 @@ def setup():
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--eps", type=float, default=1e-8)
     parser.add_argument("--weight_decay", type=float, default=0.01)
+    parser.add_argument("--save_dir", type=str, default="checkpoints")
+    parser.add_argument("--save_every", type=int, default=1)
 
-    # ---- Model dimensions ----
     parser.add_argument("--n_mels", type=int, default=80)
     parser.add_argument("--n_audio_ctx", type=int, default=1500)
     parser.add_argument("--n_audio_state", type=int, default=512)
@@ -104,13 +115,10 @@ def setup():
     parser.add_argument("--n_audio_layer", type=int, default=8)
     parser.add_argument("--use_positionalencoding", action="store_true")
     parser.add_argument("--n_spkemb_layers", type=int, default=3)
-
     return parser
-
 
 def get_config(parser:argparse.ArgumentParser):
     args = parser.parse_args()
-
     model_cfg = ModelDimensions(
         n_mels=args.n_mels,
         n_audio_ctx=args.n_audio_ctx,
@@ -120,7 +128,6 @@ def get_config(parser:argparse.ArgumentParser):
         use_positionalencoding=args.use_positionalencoding,
         n_spkemb_layers=args.n_spkemb_layers,
     )
-
     train_cfg = Traintest_config(
         metadata_path=args.metadata_path,
         prefix=args.prefix,
@@ -131,17 +138,15 @@ def get_config(parser:argparse.ArgumentParser):
         lr=args.lr,
         eps=args.eps,
         weight_decay=args.weight_decay,
+        save_dir=args.save_dir,
+        save_every=args.save_every,
     )
-
     return model_cfg, train_cfg
 
 def setup_logger():
     current_time = datetime.now().strftime("%Y%m%d-%H%M%S")
-    filename =f"traintorch_testsmall_{current_time}.txt"
-    filename = os.path.join("logs", filename)
-
-    logging.basicConfig(filename=filename,
-                        filemode="w", level=logging.INFO,
+    filename = os.path.join("logs", f"traintorch_testsmall_{current_time}.txt")
+    logging.basicConfig(filename=filename, filemode="w", level=logging.INFO,
                         format="%(asctime)s - %(levelname)s - %(message)s")
     logging.info("Logger Initialized")
     return filename
@@ -150,7 +155,6 @@ def log_configs(model_cfg, train_cfg):
     logging.info("===== Training Configuration =====")
     for k, v in asdict(train_cfg).items():
         logging.info(f"{k}: {v}")
-
     logging.info("===== Model Dimensions =====")
     for k, v in asdict(model_cfg).items():
         logging.info(f"{k}: {v}")
@@ -158,9 +162,7 @@ def log_configs(model_cfg, train_cfg):
 if __name__ == "__main__":
     parser = setup()
     model_cfg, train_cfg = get_config(parser)
-
     log_file = setup_logger()
     log_configs(model_cfg, train_cfg)
     logging.info(f"Logging to {log_file}")
-
     train(model_cfg, train_cfg)

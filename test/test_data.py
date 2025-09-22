@@ -6,7 +6,7 @@ from datam.litdataloader import VSAVDataModule
 from torch.utils.data import DataLoader
 
 def test_data(metadata_path, prefix, batch_size, index=0):
-    train_dataloader = DataLoader(VSAVSmallDataset(metadata_path, prefix), batch_size, shuffle=True, collate_fn=VSAVDataModule.collate_fn)
+    train_dataloader = DataLoader(VSAVSmallDataset(metadata_path, prefix), batch_size, shuffle=True, collate_fn=VSAVDataModule.collate_fn_clip)
 
     batch = None
     for i, batch in enumerate(train_dataloader):
