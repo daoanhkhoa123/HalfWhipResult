@@ -47,7 +47,7 @@ class VSAVDataModule(lit.LightningDataModule):
         audios, speakers, att_types = zip(*batch)
 
         samespeaker_pair_idx = defaultdict(list)
-        for sample_idx, speaker in speakers:
+        for sample_idx, speaker in enumerate(speakers):
             if len(samespeaker_pair_idx[speakers])< 2:
                 samespeaker_pair_idx[speaker].append(sample_idx)
         
