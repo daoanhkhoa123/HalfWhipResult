@@ -5,7 +5,7 @@ from torch import nn
 from typing import Iterable
 
 from model.audio import N_SAMPLES
-from model.model import Whisper1, SpeakerEmbedding, SpoofingClassifier, MultiHeadAttention, ModelDimensions
+from model.whisper import Whisper1, SpeakerEmbedding, SpoofingClassifier, MultiHeadAttention, ModelDimensions
 
 
 def test_module(model: nn.Module, input_shape: Iterable[int], batch_size: int = 2) -> None:

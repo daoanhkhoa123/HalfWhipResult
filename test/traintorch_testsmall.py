@@ -5,7 +5,7 @@ import logging
 from datetime import datetime
 import os
 
-from model.model import ModelDimensions, Whisper1
+from model.whisper import ModelDimensions, Whisper1
 from model.loss import CLIPLossCls
 from datam.dataloader import VSAVSmallDataset
 from scheduler.cosine_scheduler import cosine_schedule_with_warmup

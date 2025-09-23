@@ -38,4 +38,6 @@ Model details:
 
 What's next?
 - Embedding and spoofing should be sperated
-- Fixing audio parameters (sample rates, hop size, fft, audio length, context length for models)
+- Fixing audio parameters (sample rates, hop size, fft, audio length, context length for models
+
+)
