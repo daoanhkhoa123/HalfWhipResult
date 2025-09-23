@@ -3,7 +3,7 @@ from torch import nn, Tensor
 from torch.nn import functional as fn
 
 class CLIPLossCls(nn.Module):
-    def __init__(self, ) -> None:
+    def __init__(self, temperature) -> None:
         super().__init__()
         self.logit_scale = nn.Parameter(torch.ones([]) *  torch.log(torch.tensor(1/0.07)))
         self.cross_entropy = nn.CrossEntropyLoss()
@@ -18,22 +18,22 @@ class CLIPLossCls(nn.Module):
         first = first / first.norm(dim=-1, keepdim=True)
         second = second / second.norm(dim=-1, keepdim=True)
 
-        sim_mat = first @ second.T * self.logit_scale.exp()
+        sim_mat = first @ second.T * self.logit_scale
         labels = torch.arange(half, device=input.device)
         first_loss = self.cross_entropy(sim_mat,labels)
         second_loss = self.cross_entropy(sim_mat.T, labels)
         return (first_loss + second_loss) / 2
+    
 
-def CLIPLoss(model:nn.Module, input:Tensor) -> Tensor:
-    """
-    input: Tensor of shape [batch_size, h_dim]
-    """
-    raise NotImplementedError
-    logit_scale = getattr(model, "logit_scale", None)
-    if logit_scale is None or not torch.is_tensor(logit_scale):
-        raise ValueError("Model must have a tensor attribute 'logit_scale")
+def CLIPLoss(input:Tensor, temperature:float=0.07):
+    assert input.size(0) % 2 == 0, f"Batch size must be even. Got {input.size(0)}"
+    half = input.size(0) // 2
+    first, second = input[:half], input[half:]
+    first = fn.normalize(first)
+    second = fn.normalize(second)
 
-    input = input / input.norm(dim=-1, keepdim=True)
-    sim_mat = input @ input.T * logit_scale.exp()
-    labels = torch.arange(input.shape[0], device=input.device)
-    return fn.cross_entropy(sim_mat, labels)
+    sim_mat = first @ second.T / temperature
+    labels = torch.arange(half, device=input.device)
+    first_loss = fn.cross_entropy(sim_mat,labels)
+    second_loss = fn.cross_entropy(sim_mat.T, labels)
+    return (first_loss + second_loss) / 2

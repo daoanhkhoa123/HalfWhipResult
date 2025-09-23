@@ -6,7 +6,7 @@ from datetime import datetime
 import os
 
 from model.whisper import ModelDimensions, Whisper1
-from model.loss import CLIPLossCls
+from model.loss import CLIPLossCls, CLIPLoss
 from datam.dataloader import VSAVSmallDataset
 from scheduler.cosine_scheduler import cosine_schedule_with_warmup
 from datam.litdataloader import VSAVDataModule
@@ -66,7 +66,8 @@ def train(model_dimensions:ModelDimensions, config:Traintest_config):
     n_warmup_steps = int(0.2 * step_total)
     scheduler = cosine_schedule_with_warmup(optimizer, num_warmup_steps=n_warmup_steps, num_traning_steps=step_total)
 
-    speaker_crit = CLIPLossCls().to(config.device).train()
+    # speaker_crit = CLIPLossCls().to(config.device).train()
+    speaker_crit= CLIPLoss
     # spoofing_crit = torch.nn.CrossEntropyLoss()
 
     model.zero_grad()
