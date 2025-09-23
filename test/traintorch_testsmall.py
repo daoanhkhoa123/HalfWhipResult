@@ -67,10 +67,11 @@ def train(model_dimensions:ModelDimensions, config:Traintest_config):
     scheduler = cosine_schedule_with_warmup(optimizer, num_warmup_steps=n_warmup_steps, num_traning_steps=step_total)
 
     speaker_crit = CLIPLossCls().to(config.device).train()
-    spoofing_crit = torch.nn.CrossEntropyLoss()
+    # spoofing_crit = torch.nn.CrossEntropyLoss()
 
     model.zero_grad()
     loss = torch.zeros([])
+    spoof_loss = loss
     step = 0
     for epoch in range(int(config.epochs)):
         for step, batch in tqdm(enumerate(train_dataloader), desc=f"Epoch {epoch} Step {step}, Current Loss: {loss.item()}"):
@@ -80,8 +81,9 @@ def train(model_dimensions:ModelDimensions, config:Traintest_config):
 
             speaker_embedding, spoofing_logits = model(audio)
             speaker_loss = speaker_crit(speaker_embedding)
-            spoof_loss = spoofing_crit(spoofing_logits, att_type)
-            loss = (speaker_loss + spoof_loss) / 2
+            # spoof_loss = spoofing_crit(spoofing_logits, att_type)
+            # loss = (speaker_loss + spoof_loss) / 2
+            loss = speaker_loss
             loss.backward()
 
             optimizer.step()
