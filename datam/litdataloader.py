@@ -52,6 +52,7 @@ class VSAVDataModule(lit.LightningDataModule):
                 samespeaker_pair_idx[speaker].append(sample_idx)
         
         selected_idx = [a[0] for _, a in samespeaker_pair_idx.items() if len(a) > 1 ] + [a[1] for _,a in samespeaker_pair_idx.items() if len(a) > 1]
+        assert len(selected_idx) >0, "Please choose a bigger batch size, there is currently None speakers to match"
         
         audios = [pad_or_trim_tensor(audios[i]) for i in selected_idx]
         speakers = [speakers[i] for i in selected_idx]
